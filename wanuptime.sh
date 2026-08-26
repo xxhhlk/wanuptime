@@ -272,14 +272,23 @@ printf '%52s\n\n' "$(/bin/date +'%c')"
 F_fw_check() {
 	build_no="$(nvram get buildno | cut -f1 -d'.')"
 	build_sub="$(nvram get buildno | cut -f2 -d'.')"
- 
+	# 3006/3007 等新分支 buildno 是 Asus 内部号 (如 102.8)，不含分支号；
+	# 此时用 firmver 3.0.0.X 映射分支号 (3.0.0.6 -> 3006)
+	if [ "$build_no" -lt 300 ] 2>/dev/null ; then
+		fw_tail="$(nvram get firmver | sed 's/^3\.0\.0\.//')"
+		case "$fw_tail" in
+			''|*[!0-9]*) ;;
+			*) build_no="$((3000 + fw_tail))" ;;
+		esac
+	fi
+
 	if [ "$build_no" = '374' ] ; then
 		F_printf "Johns fork has WAN uptime in the GUI, why use this script?"
   		F_pad
 	    	exit 0
 	elif [ "$build_no" = '384' ] && [ "$build_sub" -ge 15 ] ; then
 		return 0
-	elif [ "$build_no" = '386' ] || [ "$build_no" = '388' ] ; then
+	elif [ "$build_no" = '386' ] || [ "$build_no" = '388' ] || [ "$build_no" -ge 3000 ] ; then
 		return 0
 	else
 		F_pad
