@@ -276,7 +276,7 @@ F_fw_check() {
 	# 3006 等新分支 buildno 是 Asus 内部号 (如 102.8)，不含分支号；
 	# 此时用 firmver 3.0.0.X 映射分支号 (3.0.0.6 -> 3006)
 	case "$build_base" in
-		'3006'|) return 0 ;;
+		'3006') return 0 ;;
 	esac
 
 	if [ "$build_no" = '374' ] ; then
